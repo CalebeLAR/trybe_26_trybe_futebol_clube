@@ -4,6 +4,7 @@ FROM node:16.14-alpine
 # Mudar para o diretório de trabalho /app-frontend
 
 # Copiar os package.json e package-lock.json para o container
+COPY package.json package-lock /app/frontend/
 
 # Instalar as dependências Node
 
