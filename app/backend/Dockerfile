@@ -7,6 +7,7 @@ FROM node:16.14-alpine
 COPY  package.json package-lock.json packages.npm /app/backend/
 
 # Instalar as dependências Node
+CMD [ "npm install" ]
 
 # Copiar o restante dos arquivos da aplicação para o container
 
