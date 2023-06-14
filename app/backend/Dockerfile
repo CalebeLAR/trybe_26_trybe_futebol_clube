@@ -12,6 +12,8 @@ RUN [ "npm install" ]
 
 # Copiar o restante dos arquivos da aplicação para o container
 
+COPY . /app/backend/
+
 # Sinalize que aplicação expõe a porta 3001
 EXPOSE 3001
 

@@ -12,6 +12,8 @@ RUN [ "npm install" ]
 
 # Copiar o restante dos arquivos da aplicação para o container
 
+COPY . /app/frontend/
+
 # Sinalize que aplicação expõe a porta 3000
 EXPOSE 3000
 
