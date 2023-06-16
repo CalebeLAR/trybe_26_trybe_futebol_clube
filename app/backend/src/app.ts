@@ -1,4 +1,6 @@
 import * as express from 'express';
+// import 'express-async-errors';
+import teamRouter from './routes/teams.router';
 
 class App {
   public app: express.Express;
@@ -22,6 +24,11 @@ class App {
 
     this.app.use(express.json());
     this.app.use(accessControl);
+    this.routes();
+  }
+
+  private routes(): void {
+    this.app.use(teamRouter);
   }
 
   public start(PORT: string | number): void {
