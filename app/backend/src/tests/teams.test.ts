@@ -26,6 +26,6 @@ describe('TEAMS tests', async function () {
 
     // assert
     expect(httpResponse.status).to.be.eq(200);
-    expect(httpResponse.body.data).to.be.eq(teams)
+    expect(httpResponse.body).to.be.deep.eq(teams)
   });
 });
