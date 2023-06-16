@@ -20,11 +20,3 @@ export default class TeamModel implements ITeamModel {
     return { id, teamName };
   }
 }
-
-// const test = new TeamModel();
-
-// const te = async () => {
-//   await test.findById(2);
-// };
-
-// te();
