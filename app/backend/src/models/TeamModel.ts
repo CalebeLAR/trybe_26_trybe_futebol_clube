@@ -12,7 +12,7 @@ export default class TeamModel implements ITeamModel {
     return teams;
   }
 
-  async findById(id: ITeam['id']): Promise<ITeam | null> {
+  async findById(id: number): Promise<ITeam | null> {
     const sequelizeTeam = await this.model.findByPk(id);
     if (sequelizeTeam == null) return null;
 
