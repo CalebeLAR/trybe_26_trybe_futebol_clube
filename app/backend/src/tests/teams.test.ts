@@ -14,12 +14,12 @@ chai.use(chaiHttp);
 const { expect } = chai;
 
 describe('TEAMS tests', async function () {
-  beforeEach(function () { sinon.restore(); });
+  afterEach(function () { sinon.restore(); });
 
   it('testa endpoint GET /teams ', async function () {
     // arrange
     const teams = mockTeams.teams;
-    sinon.stub(SequelizeTeam, 'findAll').resolves(teams as SequelizeTeam[])
+    sinon.stub(SequelizeTeam, 'findAll').resolves(teams as any)
 
     // act
     const httpResponse = await chai.request(app).get('/teams').send();
@@ -27,5 +27,21 @@ describe('TEAMS tests', async function () {
     // assert
     expect(httpResponse.status).to.be.eq(200);
     expect(httpResponse.body).to.be.deep.eq(teams)
+  });
+
+  describe('testa endpoint GET /teams/:id', async function () {
+    it('testa em caso de sucesso', async function () {
+      // arrange
+      const [team] = mockTeams.teams
+      const idParam = '1';
+      sinon.stub(SequelizeTeam, 'findByPk').resolves(team as any);
+
+      // act
+      const httpResponse = await chai.request(app).get('/team/1').send(idParam);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(200);
+      expect(httpResponse.body).to.be.deep.eq(team)
+    });
   });
 });
