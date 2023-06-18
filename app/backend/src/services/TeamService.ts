@@ -10,6 +10,15 @@ class TeamService {
 
     return { status: 'SUCCESSFUL', data };
   }
+
+  async findByPk(id:number): Promise<ServiceResponse<ITeam>> {
+    const data = await this.teamModel.findById(id);
+    if (!data) {
+      return { status: 'NOT_FOUND', data: { message: 'team not found' } };
+    }
+
+    return { status: 'SUCCESSFUL', data };
+  }
 }
 
 export default TeamService;
