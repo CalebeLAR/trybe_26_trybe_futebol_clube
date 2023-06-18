@@ -13,24 +13,25 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('TEAMS tests', async function () {
+describe('#TEAMS', async function () {
   afterEach(function () { sinon.restore(); });
+  describe('testa endpoint GET /teams', async function () {
+    it('deve retornar um status 200 e uma lista com os times', async function () {
+      // arrange
+      const teams = mockTeams.teams;
+      sinon.stub(SequelizeTeam, 'findAll').resolves(teams as any)
 
-  it('testa endpoint GET /teams ', async function () {
-    // arrange
-    const teams = mockTeams.teams;
-    sinon.stub(SequelizeTeam, 'findAll').resolves(teams as any)
+      // act
+      const httpResponse = await chai.request(app).get('/teams').send();
 
-    // act
-    const httpResponse = await chai.request(app).get('/teams').send();
-
-    // assert
-    expect(httpResponse.status).to.be.eq(200);
-    expect(httpResponse.body).to.be.deep.eq(teams)
+      // assert
+      expect(httpResponse.status).to.be.eq(200);
+      expect(httpResponse.body).to.be.deep.eq(teams)
+    });
   });
 
-  describe('testa endpoint GET /teams/:id', async function () {
-    it('testa em caso de sucesso', async function () {
+  describe('testa endpoint GET /team/:id', async function () {
+    it('deve retornar um status 200 e o time com o id procurado', async function () {
       // arrange
       const [team] = mockTeams.teams
       const idParam = '1';
@@ -43,8 +44,7 @@ describe('TEAMS tests', async function () {
       expect(httpResponse.status).to.be.eq(200);
       expect(httpResponse.body).to.be.deep.eq(team)
     });
-
-    it('testa em caso de falha', async function () {
+    it('deve retornar um status 404 e uma message com "tean not found" caso receba um id inexistente', async function () {
       // arrange
       const [team] = mockTeams.teams
       const idParam = '9999';
