@@ -21,15 +21,3 @@ export default class TeamController {
     return res.status(mapStatusHTTP(status)).json(data);
   }
 }
-
-// const test = new TeamController();
-
-// const funçãoAssincrona = async () => {
-//   const data = await test.findAll();
-
-//   console.log(data);
-
-//   return data;
-// };
-
-// funçãoAssincrona();
