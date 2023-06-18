@@ -37,11 +37,25 @@ describe('TEAMS tests', async function () {
       sinon.stub(SequelizeTeam, 'findByPk').resolves(team as any);
 
       // act
-      const httpResponse = await chai.request(app).get('/team/1').send(idParam);
+      const httpResponse = await chai.request(app).get(`/team/${idParam}`);
 
       // assert
       expect(httpResponse.status).to.be.eq(200);
       expect(httpResponse.body).to.be.deep.eq(team)
+    });
+
+    it('testa em caso de falha', async function () {
+      // arrange
+      const [team] = mockTeams.teams
+      const idParam = '9999';
+      sinon.stub(SequelizeTeam, 'findByPk').resolves(null);
+
+      // act
+      const httpResponse = await chai.request(app).get(`/team/${idParam}`);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(404);
+      expect(httpResponse.body).to.be.deep.eq({ message: 'team not found' })
     });
   });
 });
