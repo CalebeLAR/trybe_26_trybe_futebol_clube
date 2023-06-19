@@ -1,6 +1,6 @@
 export type ServiceMessage = { message: string };
 
-type ServiceResponseErrorType = 'NOT_FOUND';
+type ServiceResponseErrorType = 'NOT_FOUND' | 'UNAUTHORIZED';
 
 export type ServiceResponseError = {
   status: ServiceResponseErrorType,
