@@ -35,7 +35,7 @@ describe('#USERS', async function () {
       expect(httpResponse.status).to.be.eq(200)
       expect(httpResponse.body.token).to.be.eq(token);
     });
-    it('deve retornar um status 400 e uma message "All fields must be filled" caso não receba um campo email', async function () {
+    it('deve retornar um status 400 e uma mensagem "All fields must be filled" caso não receba um campo email', async function () {
       // arrange
       const { withoutAnEmailField } = mockUser.logins.invalidLogin;
 
@@ -46,7 +46,7 @@ describe('#USERS', async function () {
       expect(httpResponse.status).to.be.eq(400)
       expect(httpResponse.body).to.be.deep.eq({message: 'All fields must be filled'});
     });
-    it('deve retornar um status 400 e uma message "All fields must be filled" caso não receba um campo password', async function () {
+    it('deve retornar um status 400 e uma mensagem "All fields must be filled" caso não receba um campo password', async function () {
       // arrange
       const { withoutAPasswordField } = mockUser.logins.invalidLogin;
 
@@ -57,7 +57,7 @@ describe('#USERS', async function () {
       expect(httpResponse.status).to.be.eq(400)
       expect(httpResponse.body).to.be.deep.eq({message: 'All fields must be filled'});
     });
-    it('deve retornar um status 401 e uma message "Invalid email or password" caso não receba um email existente', async function () {
+    it('deve retornar um status 401 e uma mensagem "Invalid email or password" caso não receba um email existente', async function () {
        // arrange
        const { validLogin } = mockUser.logins;
        sinon.stub(SequelizeUser, 'findOne').resolves(null);
@@ -69,7 +69,7 @@ describe('#USERS', async function () {
        expect(httpResponse.status).to.be.eq(401)
        expect(httpResponse.body).to.be.deep.eq({ message: 'Invalid email or password' });
     });
-    it('deve retornar um status 401 e uma message "Invalid email or password" caso não receba uma senha existente', async function () {
+    it('deve retornar um status 401 e uma mensagem "Invalid email or password" caso não receba uma senha existente', async function () {
       // arrange
       const { validLogin } = mockUser.logins;
       const { userUser } = mockUser.users;
@@ -83,7 +83,7 @@ describe('#USERS', async function () {
       expect(httpResponse.status).to.be.eq(401)
       expect(httpResponse.body).to.be.deep.eq({ message: 'Invalid email or password' });
     });
-    it('deve retornar um status 401 e uma message "Invalid email or password" caso receba uma senha com menos de 6 digitos', async function () {
+    it('deve retornar um status 401 e uma mensagem "Invalid email or password" caso receba uma senha com menos de 6 digitos', async function () {
       // arrange
       const { passwordFieldLessThanSixDigits } = mockUser.logins.invalidLogin;
       const { userUser } = mockUser.users;
@@ -97,5 +97,18 @@ describe('#USERS', async function () {
       expect(httpResponse.status).to.be.eq(401)
       expect(httpResponse.body).to.be.deep.eq({ message: 'Invalid email or password' });
     });
+  });
+  describe('testa endpoint POST /login/role', async function () {
+    it('deve retornar um status 200 contendo com um objeto contendo a role do usuário caso a requisição seja feita com um token valido', async function () {
+      //arrange 
+        // --> mockar os headers com um token valido,
+        // --> mockar o retorno da sekelizeUser para não consultar o banco de dados
+      //act
+        // fazer a requisição
+      //assert
+        // ver se chegou certo
+    });
+    it('deve retornar um status 401 contendo com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {});
+    it('deve retornar um status 401 contendo com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {});
   });
 });
