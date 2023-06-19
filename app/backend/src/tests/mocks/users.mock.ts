@@ -3,11 +3,17 @@ const logins = {
     email: 'userUser@email.com',
     password: 'senhaUser'
   },
-  loginWithOutEmail: {
-    password: 'senhaUser',
-  },
-  loginWithOutPassword: {
-    email: 'userUser@email.com',
+  invalidLogin: {
+    withoutAnEmailField: {
+      password: 'senhaUser',
+    },
+    withoutAPasswordField: {
+      email: 'userUser@email.com',
+    },
+    passwordFieldLessThanSixDigits: {
+      password: '12345',
+      email: 'userUser@email.com',
+    }
   }
 }
 
