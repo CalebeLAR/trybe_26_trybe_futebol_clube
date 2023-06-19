@@ -8,6 +8,7 @@ import SequelizeUser from '../database/models/SequelizeUser';
 import mockUser from './mocks/users.mock';
 
 import { Response } from 'superagent';
+import TokenGenerator from '../services/TokenGenerateJWT';
 
 chai.use(chaiHttp);
 
@@ -23,12 +24,13 @@ describe('#USERS', async function () {
       const token = '{dataUser sem senha} ecriptado'
 
       sinon.stub(SequelizeUser, 'findOne').resolves(userUser as any);
-      // act
 
+      // act
       const httpResponse = await chai.request(app).post('/login').send(validLogin);
+
       // assert
       expect(httpResponse.status).to.be.eq(200)
-      expect(httpResponse.body.token).to.be.eq(token)
+      expect(httpResponse.body).to.be.have.property("token");
     });
     it('deve retornar um status 400 e uma message "All fields must be filled" caso não receba um campo email', async function () {
       // arrange
@@ -39,7 +41,7 @@ describe('#USERS', async function () {
 
       // assert
       expect(httpResponse.status).to.be.eq(400)
-      expect(httpResponse.body.token).to.be.eq({message: 'All fields must be filled'});
+      expect(httpResponse.body).to.be.deep.eq({message: 'All fields must be filled'});
     });
     it('deve retornar um status 400 e uma message "All fields must be filled" caso não receba um campo password', async function () {
       // arrange
@@ -50,7 +52,7 @@ describe('#USERS', async function () {
 
       // assert
       expect(httpResponse.status).to.be.eq(400)
-      expect(httpResponse.body.token).to.be.eq({message: 'All fields must be filled'});
+      expect(httpResponse.body).to.be.deep.eq({message: 'All fields must be filled'});
     });
   });
 });

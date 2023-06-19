@@ -4,12 +4,10 @@ const logins = {
     password: 'senhaUser'
   },
   loginWithOutEmail: {
-    email: '',
     password: 'senhaUser',
   },
   loginWithOutPassword: {
     email: 'userUser@email.com',
-    password: '',
   }
 }
 
