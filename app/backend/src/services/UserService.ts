@@ -36,6 +36,16 @@ export default class UserService {
 
     return { status: 'SUCCESSFUL', data: token };
   }
+
+  async loginRole(token:string):Promise<ServiceResponse<string>> {
+    const payload = this.tokerGenerator.verifyToken<IUser>(token);
+
+    if (!payload) {
+      return { status: 'UNAUTHORIZED', data: { message: 'Token must be a valid token' } };
+    }
+    const { role } = payload;
+    return { status: 'SUCCESSFUL', data: role };
+  }
 }
 
 // const test = new UserService();
