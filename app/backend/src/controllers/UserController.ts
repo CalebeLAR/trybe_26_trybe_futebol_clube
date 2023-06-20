@@ -14,4 +14,13 @@ export default class UserController {
 
     return res.status(mapStatusHTTP(status)).json({ token: data });
   }
+
+  async loginRole(req:Request, res: Response):Promise<Response> {
+    const { authorization: token } = req.headers;
+
+    const { status, data } = await this.userService.loginRole(token as string);
+    if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
+
+    return res.status(mapStatusHTTP(status)).json({ role: data });
+  }
 }
