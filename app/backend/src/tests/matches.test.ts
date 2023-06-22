@@ -8,6 +8,8 @@ import SequelizeMatch from '../database/models/SequelizeMatch';
 import matchesMocks from './mocks/matches.mocks';
 
 import { Response } from 'superagent';
+import MatchModel from '../models/MatchModel';
+import { Model } from 'sequelize';
 
 chai.use(chaiHttp);
 
@@ -19,15 +21,14 @@ describe('#MATCHES', async function () {
       it('deve retornar um status 200 e uma lista de partidas', async function() {
         // arrange
         const { matchesWithTeams } = matchesMocks.matchesLists;
-        const findAllReturn = MatchModel.build(matchesWithTeams);
 
-        sinon.stub(SequelizeMatch, 'findAll').resolves(findAllReturn);
-        // act
-        const httpResponse = await chai.request(app).get('/matches').send(findAllReturn);
+        sinon.stub(SequelizeMatch, 'findAll').resolves(matchesWithTeams as any);
+        // act 
+        const httpResponse = await chai.request(app).get('/matches').send(matchesWithTeams);
 
         // assert
-        expect(httpResponse.status).to.be.equal(401);
-        expect(httpResponse.body.data).to.deep.equal(matchesWithTeams);
+        expect(httpResponse.status).to.be.equal(200);
+        expect(httpResponse.body).to.deep.equal(matchesWithTeams);
       });
     });
 });
