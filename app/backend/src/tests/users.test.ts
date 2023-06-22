@@ -98,17 +98,33 @@ describe('#USERS', async function () {
       expect(httpResponse.body).to.be.deep.eq({ message: 'Invalid email or password' });
     });
   });
-  describe('testa endpoint POST /login/role', async function () {
+  describe('testa endpoint get /login/role', async function () {
     it('deve retornar um status 200 contendo com um objeto contendo a role do usuário caso a requisição seja feita com um token valido', async function () {
-      //arrange 
-        // --> mockar os headers com um token valido,
-        // --> mockar o retorno da sekelizeUser para não consultar o banco de dados
-      //act
-        // fazer a requisição
-      //assert
-        // ver se chegou certo
+      // arrange
+      const validToken = 'tokenValido'
+      const payload = { role: 'string' }
+
+      sinon.stub(jsonwebtoken, 'verify').returns(payload as any)
+      // act
+      const httpResponse = await chai.request(app).get('/login/role').set("authorization", validToken)
+      // assert
+      expect(httpResponse.status).to.be.eq(200);
+      expect(httpResponse.body).to.deep.eq(payload);
     });
-    it('deve retornar um status 401 contendo com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {});
-    it('deve retornar um status 401 contendo com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {});
+    it('deve retornar um status 401 contendo com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {
+      // act
+      const httpResponse = await chai.request(app).get('/login/role');
+
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token not found' });
+    });
+    it('deve retornar um status 401 com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {
+      // act
+      const httpResponse = await chai.request(app).get('/login/role').set("authorization", 'tokenValido')
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token must be a valid token' });
+    });
   });
 });
