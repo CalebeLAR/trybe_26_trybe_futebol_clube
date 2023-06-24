@@ -27,8 +27,9 @@ import { IMatchTeam } from '../Interfaces/matches/IMatch';
 class MatchModel {
   private model = SequelizeMatch;
 
-  async findAllMatchesWithTeams() {
+  async findAllMatchesWithTeams():Promise<IMatchTeam[]> {
     const sequelizeMatches = await this.model.findAll({
+      where: { },
       include: [{
         model: SequelizeTeam,
         as: 'homeTeam',
@@ -41,6 +42,23 @@ class MatchModel {
     }) as unknown;
 
     return sequelizeMatches as IMatchTeam[];
+  }
+
+  async fetchInProgressMatches(inProgress: boolean):Promise<IMatchTeam[]> {
+    const sequelizeMatchInProgress = await this.model.findAll({
+      where: { inProgress },
+      include: [{
+        model: SequelizeTeam,
+        as: 'homeTeam',
+        attributes: { exclude: ['id'] },
+      }, {
+        model: SequelizeTeam,
+        as: 'awayTeam',
+        attributes: { exclude: ['id'] },
+      }],
+    }) as unknown;
+
+    return sequelizeMatchInProgress as IMatchTeam[];
   }
 }
 

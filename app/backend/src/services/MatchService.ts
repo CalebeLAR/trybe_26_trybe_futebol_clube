@@ -10,6 +10,12 @@ class MatchService {
 
     return { status: 'SUCCESSFUL', data: matchesWithTeams };
   }
+
+  async findAllInProgressMatches(inProgress: boolean):Promise<ServiceResponse<IMatchTeam[]>> {
+    const inProgressMatches = await this.matchModel.fetchInProgressMatches(inProgress);
+
+    return { status: 'SUCCESSFUL', data: inProgressMatches };
+  }
 }
 
 export default MatchService;
