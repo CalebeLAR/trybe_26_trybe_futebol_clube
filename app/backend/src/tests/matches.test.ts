@@ -30,5 +30,29 @@ describe('#MATCHES', async function () {
         expect(httpResponse.status).to.be.equal(200);
         expect(httpResponse.body).to.deep.equal(matchesWithTeams);
       });
+      it('deve retornar um status 200 e uma lista de partidas em andamento, caso receba a query inProgress=true', async function() {
+        // arrange
+        const { InProgressMatches } = matchesMocks.matchesLists;
+
+        sinon.stub(SequelizeMatch, 'findAll').resolves(InProgressMatches as any);
+        // act 
+        const httpResponse = await chai.request(app).get('/matches').query({inProgress: 'true'});
+
+        // assert
+        expect(httpResponse.status).to.be.equal(200);
+        expect(httpResponse.body).to.deep.equal(InProgressMatches);
+      });
+      it('deve retornar um status 200 e uma lista de partidas finalizadas, caso receba a query inProgress=false', async function() {
+        // arrange
+        const { ComplatedMatches } = matchesMocks.matchesLists;
+
+        sinon.stub(SequelizeMatch, 'findAll').resolves(ComplatedMatches as any);
+        // act 
+        const httpResponse = await chai.request(app).get('/matches').query({inProgress: 'false'});
+
+        // assert
+        expect(httpResponse.status).to.be.equal(200);
+        expect(httpResponse.body).to.deep.equal(ComplatedMatches);
+      });
     });
 });
