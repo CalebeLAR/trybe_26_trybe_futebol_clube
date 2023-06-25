@@ -6,15 +6,21 @@ const matchController = new MatchController();
 
 const matchRouter = Router();
 
-matchRouter.get(
-  '/matches',
-  (req: Request, res: Response) => matchController.findAllMatchesWithTeams(req, res),
-);
-
 matchRouter.patch(
   '/matches/:id/finish',
   AuthMiddleware.validateToken,
   (req: Request, res: Response) => matchController.finishMatch(req, res),
+);
+
+matchRouter.patch(
+  '/matches/:id',
+  AuthMiddleware.validateToken,
+  (req: Request, res: Response) => matchController.updateMatch(req, res),
+);
+
+matchRouter.get(
+  '/matches',
+  (req: Request, res: Response) => matchController.findAllMatchesWithTeams(req, res),
 );
 
 export default matchRouter;

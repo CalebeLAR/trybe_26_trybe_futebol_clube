@@ -1,4 +1,4 @@
-import { IMatchTeam } from '../Interfaces/matches/IMatch';
+import { IMatch, IMatchGoals, IMatchTeam } from '../Interfaces/matches/IMatch';
 import { ServiceResponse } from '../Interfaces/IServiceResponse';
 import MatchModel from '../models/MatchModel';
 import TokenGenerator from './TokenGenerateJWT';
@@ -30,6 +30,24 @@ class MatchService {
     await this.matchModel.finishMatch(id);
 
     return { status: 'SUCCESSFUL', data: 'Finished' };
+  }
+
+  async updateMatch(id:number, match: IMatchGoals, token:string)
+    :Promise<ServiceResponse<IMatch>> {
+    const payload = this.tokerGenerator.verifyToken<IUser>(token);
+
+    if (!payload) {
+      return { status: 'UNAUTHORIZED', data: { message: 'Token must be a valid token' } };
+    }
+
+    await this.matchModel.updateMatch(id, match);
+    const updatedMatch = await this.matchModel.findMatchByPk(id);
+
+    if (!updatedMatch) {
+      return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
+    }
+
+    return { status: 'SUCCESSFUL', data: updatedMatch };
   }
 }
 
