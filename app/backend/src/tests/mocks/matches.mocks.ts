@@ -108,6 +108,16 @@ const matchesLists = {
   ],
 }
 
+const match = {
+  id: 1,
+  homeTeamGoals: 5,
+  awayTeamGoals: 7,
+  awayTeamId: 8,
+  homeTeamId: 16,
+  inProgress: false
+}
+
 export default {
   matchesLists,
+  match,
 }

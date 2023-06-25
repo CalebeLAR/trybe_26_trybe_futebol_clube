@@ -41,8 +41,8 @@ class MatchService {
     }
 
     await this.matchModel.updateMatch(id, match);
-    const updatedMatch = await this.matchModel.findMatchByPk(id);
 
+    const updatedMatch = await this.matchModel.findMatchByPk(id);
     if (!updatedMatch) {
       return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
     }

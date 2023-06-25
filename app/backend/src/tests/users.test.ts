@@ -99,7 +99,7 @@ describe('#USERS', async function () {
     });
   });
   describe('testa endpoint get /login/role', async function () {
-    it('deve retornar um status 200 contendo com um objeto contendo a role do usuário caso a requisição seja feita com um token valido', async function () {
+    it('deve retornar um status 200 com um objeto contendo a role do usuário caso a requisição seja feita com um token valido', async function () {
       // arrange
       const validToken = 'tokenValido'
       const payload = { role: 'string' }

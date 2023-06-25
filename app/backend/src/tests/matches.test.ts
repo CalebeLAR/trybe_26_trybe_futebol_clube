@@ -16,83 +16,144 @@ const { expect } = chai;
 
 describe('#MATCHES', async function () {
   afterEach(function () { sinon.restore(); });
-    describe('testa endpoint GET /matches', async function() {
-      it('deve retornar um status 200 e uma lista de partidas', async function() {
-        // arrange
-        const { matchesWithTeams } = matchesMocks.matchesLists;
+  describe('testa endpoint GET /matches', async function () {
+    it('deve retornar um status 200 e uma lista de partidas', async function () {
+      // arrange
+      const { matchesWithTeams } = matchesMocks.matchesLists;
 
-        sinon.stub(SequelizeMatch, 'findAll').resolves(matchesWithTeams as any);
-        // act 
-        const httpResponse = await chai.request(app).get('/matches').send(matchesWithTeams);
+      sinon.stub(SequelizeMatch, 'findAll').resolves(matchesWithTeams as any);
+      // act 
+      const httpResponse = await chai.request(app).get('/matches').send(matchesWithTeams);
 
-        // assert
-        expect(httpResponse.status).to.be.equal(200);
-        expect(httpResponse.body).to.deep.equal(matchesWithTeams);
-      });
-      it('deve retornar um status 200 e uma lista de partidas em andamento, caso receba a query inProgress=true', async function() {
-        // arrange
-        const { InProgressMatches } = matchesMocks.matchesLists;
-
-        sinon.stub(SequelizeMatch, 'findAll').resolves(InProgressMatches as any);
-        // act 
-        const httpResponse = await chai.request(app).get('/matches').query({inProgress: 'true'});
-
-        // assert
-        expect(httpResponse.status).to.be.equal(200);
-        expect(httpResponse.body).to.deep.equal(InProgressMatches);
-      });
-      it('deve retornar um status 200 e uma lista de partidas finalizadas, caso receba a query inProgress=false', async function() {
-        // arrange
-        const { ComplatedMatches } = matchesMocks.matchesLists;
-
-        sinon.stub(SequelizeMatch, 'findAll').resolves(ComplatedMatches as any);
-        // act 
-        const httpResponse = await chai.request(app).get('/matches').query({inProgress: 'false'});
-
-        // assert
-        expect(httpResponse.status).to.be.equal(200);
-        expect(httpResponse.body).to.deep.equal(ComplatedMatches);
-      });
+      // assert
+      expect(httpResponse.status).to.be.equal(200);
+      expect(httpResponse.body).to.deep.equal(matchesWithTeams);
     });
-    describe('testa endpoint PATCH /matches/:id/finish', async function() {
-      it('deve retornar um status 200 e uma mensagem "Finished" caso a requisição seja feita com um token valido', async function () {
-        // arrange
-        const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
-        const idParam = '1'
-        const payload = usersMock.users.userAdmim;
-  
-        sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
-        sinon.stub(SequelizeMatch, 'update').resolves([1]);
+    it('deve retornar um status 200 e uma lista de partidas em andamento, caso receba a query inProgress=true', async function () {
+      // arrange
+      const { InProgressMatches } = matchesMocks.matchesLists;
 
-        // act
-        const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set("authorization", validToken);
+      sinon.stub(SequelizeMatch, 'findAll').resolves(InProgressMatches as any);
+      // act 
+      const httpResponse = await chai.request(app).get('/matches').query({ inProgress: 'true' });
 
-        // assert
-        expect(httpResponse.status).to.be.eq(200);
-        expect(httpResponse.body.message).to.deep.eq('Finished');
-      });
-      it('deve retornar um status 401 contendo com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {
-        // arrange
-        const idParam = '1'
-        // act
-        const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`);
-  
-        // assert
-        expect(httpResponse.status).to.be.eq(401);
-        expect(httpResponse.body).to.deep.eq({ message: 'Token not found' });
-      });
-      it('deve retornar um status 401 com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {
-        // arrange
-        const inValidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
-        const idParam = '1'
-        sinon.stub(jsonwebtoken, 'verify').throws()
-
-        // act
-        const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set('authorization', inValidToken);
-  
-        // assert
-        expect(httpResponse.status).to.be.eq(401);
-        expect(httpResponse.body).to.deep.eq({ message: 'Token must be a valid token' });
-      });
+      // assert
+      expect(httpResponse.status).to.be.equal(200);
+      expect(httpResponse.body).to.deep.equal(InProgressMatches);
     });
+    it('deve retornar um status 200 e uma lista de partidas finalizadas, caso receba a query inProgress=false', async function () {
+      // arrange
+      const { ComplatedMatches } = matchesMocks.matchesLists;
+
+      sinon.stub(SequelizeMatch, 'findAll').resolves(ComplatedMatches as any);
+      // act 
+      const httpResponse = await chai.request(app).get('/matches').query({ inProgress: 'false' });
+
+      // assert
+      expect(httpResponse.status).to.be.equal(200);
+      expect(httpResponse.body).to.deep.equal(ComplatedMatches);
+    });
+  });
+  describe('testa endpoint PATCH /matches/:id/finish', async function () {
+    it('deve retornar um status 200 e uma mensagem "Finished" caso a requisição seja feita com um token valido', async function () {
+      // arrange
+      const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const idParam = '1'
+      const payload = usersMock.users.userAdmim;
+
+      sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
+      sinon.stub(SequelizeMatch, 'update').resolves([1]);
+
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set("authorization", validToken);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(200);
+      expect(httpResponse.body.message).to.deep.eq('Finished');
+    });
+    it('deve retornar um status 401 contendo com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {
+      // arrange
+      const idParam = '1'
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token not found' });
+    });
+    it('deve retornar um status 401 com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {
+      // arrange
+      const inValidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const idParam = '1'
+      sinon.stub(jsonwebtoken, 'verify').throws()
+
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set('authorization', inValidToken);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token must be a valid token' });
+    });
+  });
+  describe('testa endpoint PATCH /matches/:id', async function () {
+    it('deve retornar um status 200 com um objeto contendo a partida que foi atualizada caso a requisição seja feita com um token valido', async function () {
+      // arrange
+      const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const idParam = '1'
+      const payload = usersMock.users.userAdmim;
+      const { match } = matchesMocks;
+      const sequelizeMatch = SequelizeMatch.build(match);
+
+      sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
+      sinon.stub(SequelizeMatch, 'update').resolves([1]);
+      sinon.stub(SequelizeMatch, 'findByPk').resolves(sequelizeMatch);
+
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}`).set("authorization", validToken);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(200);
+      expect(httpResponse.body).to.deep.eq(match);
+    });
+    it('deve retornar um status 401 com a mensagem "Match not found" caso a requisição seja feita usando um id inexistente', async function () {
+      // arrange
+      const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const idParam = '100000'
+      const payload = usersMock.users.userAdmim;
+
+      sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
+      sinon.stub(SequelizeMatch, 'update').resolves([0]);
+      sinon.stub(SequelizeMatch, 'findByPk').resolves(null);
+
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}`).set("authorization", validToken);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(404);
+      expect(httpResponse.body.message).to.deep.eq("Match not found");
+    });
+    it('deve retornar um status 401 com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {
+      // arrange
+      const idParam = '1'
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token not found' });
+    });
+    it('deve retornar um status 401 com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {
+      // arrange
+      const inValidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const idParam = '1'
+      sinon.stub(jsonwebtoken, 'verify').throws()
+
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set('authorization', inValidToken);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token must be a valid token' });
+    });
+  });
 });

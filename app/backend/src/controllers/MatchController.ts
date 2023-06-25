@@ -38,7 +38,7 @@ class MatchController {
     const { status, data } = await this.matchService.updateMatch(id, match, token as string);
     if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
-    return res.status(mapStatusHTTP(status)).json({ message: data });
+    return res.status(mapStatusHTTP(status)).json(data);
   }
 }
 
