@@ -23,4 +23,9 @@ matchRouter.get(
   (req: Request, res: Response) => matchController.findAllMatchesWithTeams(req, res),
 );
 
+matchRouter.post(
+  '/matches',
+  (req: Request, res: Response) => matchController.postNewMatch(req, res),
+);
+
 export default matchRouter;

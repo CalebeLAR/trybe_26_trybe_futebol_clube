@@ -1,6 +1,6 @@
 import SequelizeTeam from '../database/models/SequelizeTeam';
 import SequelizeMatch from '../database/models/SequelizeMatch';
-import { IMatch, IMatchGoals, IMatchTeam } from '../Interfaces/matches/IMatch';
+import { IMatch, IMatchGoals, IMatchTeam, INewMatch } from '../Interfaces/matches/IMatch';
 import { ITeam } from '../Interfaces/teams/ITeam';
 
 type SequelizeMatchTeam = SequelizeMatch & {
@@ -92,6 +92,21 @@ class MatchModel {
     };
 
     return match;
+  }
+
+  async postNewMatch(match: INewMatch):Promise<IMatch> {
+    const sequelizeNewMatch = await this.model.create({ ...match, inProgress: true });
+
+    const newMatch: IMatch = {
+      id: sequelizeNewMatch.id,
+      awayTeamGoals: sequelizeNewMatch.awayTeamGoals,
+      awayTeamId: sequelizeNewMatch.awayTeamId,
+      homeTeamGoals: sequelizeNewMatch.homeTeamGoals,
+      homeTeamId: sequelizeNewMatch.homeTeamId,
+      inProgress: sequelizeNewMatch.inProgress,
+    };
+
+    return newMatch;
   }
 }
 

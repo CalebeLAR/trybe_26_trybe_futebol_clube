@@ -1,4 +1,5 @@
-import { IMatch, IMatchGoals, IMatchTeam } from '../Interfaces/matches/IMatch';
+/* eslint-disable sonarjs/no-duplicate-string */
+import { IMatch, IMatchGoals, IMatchTeam, INewMatch } from '../Interfaces/matches/IMatch';
 import { ServiceResponse } from '../Interfaces/IServiceResponse';
 import MatchModel from '../models/MatchModel';
 import TokenGenerator from './TokenGenerateJWT';
@@ -48,6 +49,17 @@ class MatchService {
     }
 
     return { status: 'SUCCESSFUL', data: updatedMatch };
+  }
+
+  async postNewMatch(match: INewMatch, token:string):Promise<ServiceResponse<IMatch>> {
+    const payload = this.tokerGenerator.verifyToken<IUser>(token);
+
+    if (!payload) {
+      return { status: 'UNAUTHORIZED', data: { message: 'Token must be a valid token' } };
+    }
+
+    const newMatch = await this.matchModel.postNewMatch(match);
+    return { status: 'SUCCESSFUL', data: newMatch };
   }
 }
 

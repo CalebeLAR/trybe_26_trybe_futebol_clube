@@ -18,3 +18,10 @@ export type IMatchTeam = IMatch & {
   homeTeam: ITeam['teamName'],
   awayTeam: ITeam['teamName'],
 };
+
+export interface INewMatch {
+  homeTeamId: number,
+  homeTeamGoals: number,
+  awayTeamId: number,
+  awayTeamGoals: number,
+}
