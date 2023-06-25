@@ -23,7 +23,7 @@ const matchesLists = {
       homeTeamGoals: 1,
       awayTeamId: 14,
       awayTeamGoals: 1,
-      inprogress: false,
+      inProgress: true,
       homeTeam: {
         teamName: 'Internacional'
       },

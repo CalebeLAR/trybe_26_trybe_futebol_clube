@@ -15,6 +15,6 @@ export type IMatchGoals = {
 };
 
 export type IMatchTeam = IMatch & {
-  homeTeam: Omit<ITeam, 'id'>,
-  awayTeam: Omit<ITeam, 'id'>,
+  homeTeam: ITeam['teamName'],
+  awayTeam: ITeam['teamName'],
 };
