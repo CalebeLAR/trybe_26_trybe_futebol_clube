@@ -18,6 +18,16 @@ class MatchController {
     const { status, data } = await this.matchService.findAllMatchesWithTeams();
     return res.status(mapStatusHTTP(status)).json(data);
   }
+
+  async finishMatch(req:Request, res:Response):Promise<Response> {
+    const { authorization: token } = req.headers;
+    const id = Number(req.params.id);
+
+    const { status, data } = await this.matchService.finishMatch(id, token as string);
+    if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
+
+    return res.status(mapStatusHTTP(status)).json({ message: data });
+  }
 }
 
 export default MatchController;

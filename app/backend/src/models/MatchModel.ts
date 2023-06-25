@@ -60,6 +60,15 @@ class MatchModel {
 
     return sequelizeMatchInProgress as IMatchTeam[];
   }
+
+  async finishMatch(id: number):Promise<number> {
+    const [sequelizeMatchUpdated] = await this.model.update(
+      { inProgress: false },
+      { where: { id } },
+    );
+
+    return sequelizeMatchUpdated;
+  }
 }
 
 export default MatchModel;
