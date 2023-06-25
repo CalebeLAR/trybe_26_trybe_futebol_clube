@@ -7,9 +7,8 @@ import { app } from '../app';
 import SequelizeMatch from '../database/models/SequelizeMatch';
 import matchesMocks from './mocks/matches.mocks';
 
-import { Response } from 'superagent';
-import MatchModel from '../models/MatchModel';
-import { Model } from 'sequelize';
+import * as jsonwebtoken from 'jsonwebtoken';
+import usersMock from './mocks/users.mock';
 
 chai.use(chaiHttp);
 
@@ -53,6 +52,47 @@ describe('#MATCHES', async function () {
         // assert
         expect(httpResponse.status).to.be.equal(200);
         expect(httpResponse.body).to.deep.equal(ComplatedMatches);
+      });
+    });
+    describe('testa endpoint PATCH /matches/:id/finish', async function() {
+      it('deve retornar um status 200 e uma mensagem "Finished" caso a requisição seja feita com um token valido', async function () {
+        // arrange
+        const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+        const idParam = '1'
+        const payload = usersMock.users.userAdmim;
+  
+        sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
+        sinon.stub(SequelizeMatch, 'update').resolves([1]);
+
+        // act
+        const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set("authorization", validToken);
+
+        // assert
+        expect(httpResponse.status).to.be.eq(200);
+        expect(httpResponse.body.message).to.deep.eq('Finished');
+      });
+      it('deve retornar um status 401 contendo com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {
+        // arrange
+        const idParam = '1'
+        // act
+        const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`);
+  
+        // assert
+        expect(httpResponse.status).to.be.eq(401);
+        expect(httpResponse.body).to.deep.eq({ message: 'Token not found' });
+      });
+      it('deve retornar um status 401 com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {
+        // arrange
+        const inValidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+        const idParam = '1'
+        sinon.stub(jsonwebtoken, 'verify').throws()
+
+        // act
+        const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set('authorization', inValidToken);
+  
+        // assert
+        expect(httpResponse.status).to.be.eq(401);
+        expect(httpResponse.body).to.deep.eq({ message: 'Token must be a valid token' });
       });
     });
 });
