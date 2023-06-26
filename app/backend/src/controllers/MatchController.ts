@@ -45,7 +45,7 @@ class MatchController {
     const { status, data } = await this.matchService.postNewMatch(match);
     if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
-    return res.status(mapStatusHTTP(status)).json(data);
+    return res.status(201).json(data);
   }
 }
 

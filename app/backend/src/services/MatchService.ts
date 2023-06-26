@@ -1,11 +1,9 @@
 import { IMatch, IMatchGoals, IMatchTeam, INewMatch } from '../Interfaces/matches/IMatch';
 import { ServiceResponse } from '../Interfaces/IServiceResponse';
 import MatchModel from '../models/MatchModel';
-import TokenGenerator from './TokenGenerateJWT';
 
 class MatchService {
   private matchModel = new MatchModel();
-  private tokerGenerator = new TokenGenerator();
 
   async findAllMatchesWithTeams():Promise<ServiceResponse<IMatchTeam[]>> {
     const matchesWithTeams = await this.matchModel.findAllMatchesWithTeams();

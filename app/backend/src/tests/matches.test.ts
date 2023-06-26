@@ -156,4 +156,59 @@ describe('#MATCHES', async function () {
       expect(httpResponse.body).to.deep.eq({ message: 'Token must be a valid token' });
     });
   });
+  describe('testa endpoint POST /matches', async function () {
+    it('deve retornar um status 201 com um objeto contendo a partida que foi inserida caso a requisição seja feita com um token valido', async function () {
+      // arrange
+      const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const payload = usersMock.users.userAdmim;
+      const httpRequest = {
+        homeTeamId: 16, 
+        awayTeamId: 8,
+        homeTeamGoals: 2,
+        awayTeamGoals: 2
+      };
+      const newMatch = {
+        id: 1,
+        homeTeamId: 16, 
+        awayTeamId: 8,
+        homeTeamGoals: 2,
+        awayTeamGoals: 2,
+        inProgress: true,
+      };
+      const sequelizeMatch = SequelizeMatch.build(newMatch);
+
+      sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
+      sinon.stub(SequelizeMatch, 'create').resolves(sequelizeMatch);
+
+      // act
+      const httpResponse = await chai.request(app).post(`/matches`).set("authorization", validToken).send(httpRequest)
+      // assert
+      expect(httpResponse.status).to.be.eq(201);
+      expect(httpResponse.body).to.deep.eq(newMatch);
+    });
+    it('deve retornar um status 401 com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {
+      // arrange
+      const idParam = '1'
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token not found' });
+    });
+    it('deve retornar um status 401 com a mensagem "Token must be a valid token" caso a requisição seja feita usando um token inválido', async function () {
+      // arrange
+      const inValidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const idParam = '1'
+      sinon.stub(jsonwebtoken, 'verify').throws()
+
+      // act
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}/finish`).set('authorization', inValidToken);
+
+      // assert
+      expect(httpResponse.status).to.be.eq(401);
+      expect(httpResponse.body).to.deep.eq({ message: 'Token must be a valid token' });
+    });
+  });
+  
 });

@@ -25,6 +25,7 @@ matchRouter.get(
 
 matchRouter.post(
   '/matches',
+  AuthMiddleware.validateUserToken,
   (req: Request, res: Response) => matchController.postNewMatch(req, res),
 );
 
