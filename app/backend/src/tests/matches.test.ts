@@ -115,7 +115,7 @@ describe('#MATCHES', async function () {
       expect(httpResponse.status).to.be.eq(200);
       expect(httpResponse.body).to.deep.eq({...match, homeTeamGoals: 5, awayTeamGoals: 7});
     });
-    it('deve retornar um status 401 com a mensagem "Match not found" caso a requisição seja feita usando um id inexistente', async function () {
+    it('deve retornar um status 404 com a mensagem "Match not found" caso a requisição seja feita usando um id inexistente', async function () {
       // arrange
       const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
       const idParam = '100000'
@@ -175,6 +175,7 @@ describe('#MATCHES', async function () {
         awayTeamGoals: 2,
         inProgress: true,
       };
+
       const sequelizeMatch = SequelizeMatch.build(newMatch);
 
       sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
@@ -185,6 +186,24 @@ describe('#MATCHES', async function () {
       // assert
       expect(httpResponse.status).to.be.eq(201);
       expect(httpResponse.body).to.deep.eq(newMatch);
+    });
+    it('deve retornar um status 404 com a mensagem "There is no team with such id!" caso a requisição seja feita usando o id de um time inexistente', async function () {
+      const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc'
+      const payload = usersMock.users.userAdmim;
+      const httpRequest = {
+        homeTeamId: 99999, 
+        awayTeamId: 8,
+        homeTeamGoals: 2,
+        awayTeamGoals: 2
+      };
+      sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
+      sinon.stub(SequelizeMatch, 'create').throws();
+
+      // act
+      const httpResponse = await chai.request(app).post(`/matches`).set("authorization", validToken).send(httpRequest)
+      // assert
+      expect(httpResponse.status).to.be.eq(404);
+      expect(httpResponse.body.message).to.deep.eq('There is no team with such id!');
     });
     it('deve retornar um status 401 com a mensagem "Token not found" caso a requisição seja feita sem a chave authorization nos headers', async function () {
       // arrange

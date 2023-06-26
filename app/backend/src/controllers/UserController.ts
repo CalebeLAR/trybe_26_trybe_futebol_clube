@@ -21,7 +21,7 @@ export default class UserController {
     const payload: Omit<IUser, 'password'> = { id, username, role, email };
 
     const { status, data } = await this.userService.loginRole(payload);
-    if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
+    // if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
     return res.status(mapStatusHTTP(status)).json({ role: data });
   }
