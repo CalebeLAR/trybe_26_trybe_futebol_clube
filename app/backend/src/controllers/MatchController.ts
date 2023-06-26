@@ -24,7 +24,7 @@ class MatchController {
     const id = Number(req.params.id);
 
     const { status, data } = await this.matchService.finishMatch(id);
-    if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
+    // if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
     return res.status(mapStatusHTTP(status)).json({ message: data });
   }
