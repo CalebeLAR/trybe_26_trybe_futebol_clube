@@ -30,7 +30,7 @@ describe('#TEAMS', async function () {
     });
   });
 
-  describe('testa endpoint GET /team/:id', async function () {
+  describe('testa endpoint GET /teams/:id', async function () {
     it('deve retornar um status 200 e o time com o id procurado', async function () {
       // arrange
       const [team] = mockTeams.teams
@@ -38,7 +38,7 @@ describe('#TEAMS', async function () {
       sinon.stub(SequelizeTeam, 'findByPk').resolves(team as any);
 
       // act
-      const httpResponse = await chai.request(app).get(`/team/${idParam}`);
+      const httpResponse = await chai.request(app).get(`/teams/${idParam}`);
 
       // assert
       expect(httpResponse.status).to.be.eq(200);
@@ -51,7 +51,7 @@ describe('#TEAMS', async function () {
       sinon.stub(SequelizeTeam, 'findByPk').resolves(null);
 
       // act
-      const httpResponse = await chai.request(app).get(`/team/${idParam}`);
+      const httpResponse = await chai.request(app).get(`/teams/${idParam}`);
 
       // assert
       expect(httpResponse.status).to.be.eq(404);

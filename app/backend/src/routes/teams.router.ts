@@ -6,6 +6,6 @@ const teamController = new TeamController();
 const teamRouter = Router();
 
 teamRouter.get('/teams', (req: Request, res: Response) => teamController.findAll(req, res));
-teamRouter.get('/team/:id', (req: Request, res: Response) => teamController.findByPk(req, res));
+teamRouter.get('/teams/:id', (req: Request, res: Response) => teamController.findByPk(req, res));
 
 export default teamRouter;
