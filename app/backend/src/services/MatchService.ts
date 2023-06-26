@@ -3,7 +3,6 @@ import { IMatch, IMatchGoals, IMatchTeam, INewMatch } from '../Interfaces/matche
 import { ServiceResponse } from '../Interfaces/IServiceResponse';
 import MatchModel from '../models/MatchModel';
 import TokenGenerator from './TokenGenerateJWT';
-import { IUser } from '../Interfaces/users/IUser';
 
 class MatchService {
   private matchModel = new MatchModel();
@@ -21,44 +20,33 @@ class MatchService {
     return { status: 'SUCCESSFUL', data: inProgressMatches };
   }
 
-  async finishMatch(id: number, token: string):Promise<ServiceResponse<string>> {
-    const payload = this.tokerGenerator.verifyToken<IUser>(token);
-
-    if (!payload) {
-      return { status: 'UNAUTHORIZED', data: { message: 'Token must be a valid token' } };
-    }
-
+  async finishMatch(id: number):Promise<ServiceResponse<string>> {
     await this.matchModel.finishMatch(id);
 
     return { status: 'SUCCESSFUL', data: 'Finished' };
   }
 
-  async updateMatch(id:number, match: IMatchGoals, token:string)
-    :Promise<ServiceResponse<IMatch>> {
-    const payload = this.tokerGenerator.verifyToken<IUser>(token);
+  async updateMatch(id:number, dataGoals: IMatchGoals):Promise<ServiceResponse<IMatch>> {
+    const sequleizeMatch = await this.matchModel.findMatchByPk(id);
 
-    if (!payload) {
-      return { status: 'UNAUTHORIZED', data: { message: 'Token must be a valid token' } };
-    }
-
-    await this.matchModel.updateMatch(id, match);
-
-    const updatedMatch = await this.matchModel.findMatchByPk(id);
-    if (!updatedMatch) {
+    if (!sequleizeMatch) {
       return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
     }
+
+    await this.matchModel.updateMatch(id, dataGoals);
+
+    const updatedMatch: IMatch = {
+      ...sequleizeMatch,
+      homeTeamGoals: dataGoals.homeTeamGoals,
+      awayTeamGoals: dataGoals.awayTeamGoals,
+    };
 
     return { status: 'SUCCESSFUL', data: updatedMatch };
   }
 
-  async postNewMatch(match: INewMatch, token:string):Promise<ServiceResponse<IMatch>> {
-    const payload = this.tokerGenerator.verifyToken<IUser>(token);
-
-    if (!payload) {
-      return { status: 'UNAUTHORIZED', data: { message: 'Token must be a valid token' } };
-    }
-
+  async postNewMatch(match: INewMatch):Promise<ServiceResponse<IMatch>> {
     const newMatch = await this.matchModel.postNewMatch(match);
+
     return { status: 'SUCCESSFUL', data: newMatch };
   }
 }

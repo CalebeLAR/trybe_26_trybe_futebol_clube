@@ -8,13 +8,13 @@ const matchRouter = Router();
 
 matchRouter.patch(
   '/matches/:id/finish',
-  AuthMiddleware.validateToken,
+  AuthMiddleware.validateUserToken,
   (req: Request, res: Response) => matchController.finishMatch(req, res),
 );
 
 matchRouter.patch(
   '/matches/:id',
-  AuthMiddleware.validateToken,
+  AuthMiddleware.validateUserToken,
   (req: Request, res: Response) => matchController.updateMatch(req, res),
 );
 

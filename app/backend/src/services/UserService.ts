@@ -10,6 +10,7 @@ export default class UserService {
   private tokerGenerator = new TokenGenerator();
   private encrypter = new Encypter();
   private senhaTeset = '$2a$08$Y8Abi8jXvsXyqm.rmp0B.uQBA5qUz7T6Ghlg/CvVr/gLxYj5UAZVO';
+  private role = '';
 
   async login(loginEmail:string, loginPassword:string):Promise<ServiceResponse<string>> {
     // trecho usado para fins de desenvolvimento
@@ -37,14 +38,11 @@ export default class UserService {
     return { status: 'SUCCESSFUL', data: token };
   }
 
-  async loginRole(token:string):Promise<ServiceResponse<string>> {
-    const payload = this.tokerGenerator.verifyToken<IUser>(token);
+  async loginRole(user: Omit<IUser, 'password'>):Promise<ServiceResponse<string>> {
+    const { role } = user;
+    this.role = role;
 
-    if (!payload) {
-      return { status: 'UNAUTHORIZED', data: { message: 'Token must be a valid token' } };
-    }
-    const { role } = payload;
-    return { status: 'SUCCESSFUL', data: role };
+    return { status: 'SUCCESSFUL', data: this.role };
   }
 }
 

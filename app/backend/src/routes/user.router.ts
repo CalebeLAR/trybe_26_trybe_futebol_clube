@@ -15,7 +15,7 @@ userRouter.post(
 
 userRouter.get(
   '/login/role',
-  AuthMiddleware.validateToken,
+  AuthMiddleware.validateUserToken,
   (req: Request, res: Response) => userController.loginRole(req, res),
 );
 

@@ -21,33 +21,28 @@ class MatchController {
   }
 
   async finishMatch(req:Request, res:Response):Promise<Response> {
-    const { authorization: token } = req.headers;
     const id = Number(req.params.id);
 
-    const { status, data } = await this.matchService.finishMatch(id, token as string);
+    const { status, data } = await this.matchService.finishMatch(id);
     if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
     return res.status(mapStatusHTTP(status)).json({ message: data });
   }
 
   async updateMatch(req:Request, res:Response):Promise<Response> {
-    const { authorization: token } = req.headers;
     const id = Number(req.params.id);
     const match: IMatchGoals = req.body;
 
-    const { status, data } = await this.matchService.updateMatch(id, match, token as string);
+    const { status, data } = await this.matchService.updateMatch(id, match);
     if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
     return res.status(mapStatusHTTP(status)).json(data);
   }
 
   async postNewMatch(req:Request, res:Response):Promise<Response> {
-    const { authorization: token } = req.headers;
-
     const match: INewMatch = req.body;
-    console.log('----- to aki -----');
 
-    const { status, data } = await this.matchService.postNewMatch(match, token as string);
+    const { status, data } = await this.matchService.postNewMatch(match);
     if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
     return res.status(mapStatusHTTP(status)).json(data);

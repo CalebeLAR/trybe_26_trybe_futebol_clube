@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ILoginUser } from '../Interfaces/users/IUser';
+import { ILoginUser, IUser } from '../Interfaces/users/IUser';
 import mapStatusHTTP from '../utils/mapStatusHTTP';
 import UserService from '../services/UserService';
 
@@ -16,9 +16,11 @@ export default class UserController {
   }
 
   async loginRole(req:Request, res: Response):Promise<Response> {
-    const { authorization: token } = req.headers;
+    const { id, username, role, email } = req.body.payload;
 
-    const { status, data } = await this.userService.loginRole(token as string);
+    const payload: Omit<IUser, 'password'> = { id, username, role, email };
+
+    const { status, data } = await this.userService.loginRole(payload);
     if (status !== 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
     return res.status(mapStatusHTTP(status)).json({ role: data });
