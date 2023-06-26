@@ -105,15 +105,15 @@ describe('#MATCHES', async function () {
       const sequelizeMatch = SequelizeMatch.build(match);
 
       sinon.stub(jsonwebtoken, 'verify').returns(payload as any);
-      sinon.stub(SequelizeMatch, 'update').resolves([1]);
       sinon.stub(SequelizeMatch, 'findByPk').resolves(sequelizeMatch);
+      sinon.stub(SequelizeMatch, 'update').resolves([1]);
 
       // act
-      const httpResponse = await chai.request(app).patch(`/matches/${idParam}`).set("authorization", validToken);
+      const httpResponse = await chai.request(app).patch(`/matches/${idParam}`).set("authorization", validToken).send({ homeTeamGoals: 5, awayTeamGoals: 7 });
 
       // assert
       expect(httpResponse.status).to.be.eq(200);
-      expect(httpResponse.body).to.deep.eq(match);
+      expect(httpResponse.body).to.deep.eq({...match, homeTeamGoals: 5, awayTeamGoals: 7});
     });
     it('deve retornar um status 401 com a mensagem "Match not found" caso a requisição seja feita usando um id inexistente', async function () {
       // arrange
