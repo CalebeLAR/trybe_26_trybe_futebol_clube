@@ -1,3 +1,4 @@
+import sequelize from '../database/models';
 import SequelizeTeam from '../database/models/SequelizeTeam';
 import SequelizeMatch from '../database/models/SequelizeMatch';
 import { IMatch, IMatchGoals, IMatchTeam, INewMatch } from '../Interfaces/matches/IMatch';
@@ -19,12 +20,25 @@ const getMatchesWithTeams = (sequelizeMatchTeam:SequelizeMatchTeam) => ({
   awayTeam: sequelizeMatchTeam.awayTeam,
 });
 
+const getMatch = (sequelizeNewMatch: SequelizeMatch) => {
+  const newMatch = {
+    id: sequelizeNewMatch.id,
+    awayTeamGoals: sequelizeNewMatch.awayTeamGoals,
+    awayTeamId: sequelizeNewMatch.awayTeamId,
+    homeTeamGoals: sequelizeNewMatch.homeTeamGoals,
+    homeTeamId: sequelizeNewMatch.homeTeamId,
+    inProgress: sequelizeNewMatch.inProgress,
+  };
+
+  return newMatch;
+};
+
 class MatchModel {
   private model = SequelizeMatch;
 
-  async findAllMatchesWithTeams():Promise<IMatchTeam[]> {
+  async findAllMatchesWithTeams(): Promise<IMatchTeam[]> {
     const sequelizeMatches = await this.model.findAll({
-      where: { },
+      where: {},
       include: [{
         model: SequelizeTeam,
         as: 'homeTeam',
@@ -41,7 +55,7 @@ class MatchModel {
     return matches;
   }
 
-  async fetchInProgressMatches(inProgress: boolean):Promise<IMatchTeam[]> {
+  async fetchInProgressMatches(inProgress: boolean): Promise<IMatchTeam[]> {
     const sequelizeInProgressMatches = await this.model.findAll({
       where: { inProgress },
       include: [{
@@ -60,7 +74,7 @@ class MatchModel {
     return inProgressMatches;
   }
 
-  async finishMatch(id: number):Promise<number> {
+  async finishMatch(id: number): Promise<number> {
     const [sequelizeMatchUpdated] = await this.model.update(
       { inProgress: false },
       { where: { id } },
@@ -69,7 +83,7 @@ class MatchModel {
     return sequelizeMatchUpdated;
   }
 
-  async updateMatch(id: number, match: IMatchGoals):Promise<number> {
+  async updateMatch(id: number, match: IMatchGoals): Promise<number> {
     const [sequelizeMatch] = await this.model.update(
       match,
       { where: { id } },
@@ -78,7 +92,7 @@ class MatchModel {
     return sequelizeMatch;
   }
 
-  async findMatchByPk(id: number):Promise<IMatch | null> {
+  async findMatchByPk(id: number): Promise<IMatch | null> {
     const sequelizeMatch = await this.model.findByPk(id);
     if (!sequelizeMatch) return null;
 
@@ -94,19 +108,22 @@ class MatchModel {
     return match;
   }
 
-  async postNewMatch(match: INewMatch):Promise<IMatch> {
-    const sequelizeNewMatch = await this.model.create({ ...match, inProgress: true });
+  async postNewMatch(match: INewMatch): Promise<IMatch | null> {
+    const t = await sequelize.transaction();
+    try {
+      const sequelizeNewMatch = await this.model.create(
+        { ...match, inProgress: true },
+        { transaction: t },
+      );
 
-    const newMatch: IMatch = {
-      id: sequelizeNewMatch.id,
-      awayTeamGoals: sequelizeNewMatch.awayTeamGoals,
-      awayTeamId: sequelizeNewMatch.awayTeamId,
-      homeTeamGoals: sequelizeNewMatch.homeTeamGoals,
-      homeTeamId: sequelizeNewMatch.homeTeamId,
-      inProgress: sequelizeNewMatch.inProgress,
-    };
+      const newMatch: IMatch = getMatch(sequelizeNewMatch);
 
-    return newMatch;
+      await t.commit();
+      return newMatch;
+    } catch (e) {
+      await t.rollback();
+      return null;
+    }
   }
 }
 

@@ -44,6 +44,10 @@ class MatchService {
   async postNewMatch(match: INewMatch):Promise<ServiceResponse<IMatch>> {
     const newMatch = await this.matchModel.postNewMatch(match);
 
+    if (!newMatch) {
+      return { status: 'NOT_FOUND', data: { message: 'There is no team with such id!' } };
+    }
+
     return { status: 'SUCCESSFUL', data: newMatch };
   }
 }
