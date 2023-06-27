@@ -48,16 +48,16 @@ class LeaderboardAwayService {
 
   static calculateTotalGoalsFavor(listMatches: IMatchTeam[], teamName:string) {
     const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
-    const homeTeamsGoalsArray = playedMatches.map((match) => match.homeTeamGoals);
-    const totalGoals = homeTeamsGoalsArray.reduce((sum, goals) => sum + goals);
+    const awayTeamsGoalsArray = playedMatches.map((match) => match.awayTeamGoals);
+    const totalGoals = awayTeamsGoalsArray.reduce((sum, goals) => sum + goals);
 
     return totalGoals;
   }
 
   static calculateTotalGoalsOwn(listMatches: IMatchTeam[], teamName:string) {
     const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
-    const homeTeamsGoalsArray = playedMatches.map((match) => match.awayTeamGoals);
-    const totalGoals = homeTeamsGoalsArray.reduce((sum, goals) => sum + goals);
+    const awayTeamsGoalsArray = playedMatches.map((match) => match.homeTeamGoals);
+    const totalGoals = awayTeamsGoalsArray.reduce((sum, goals) => sum + goals);
 
     return totalGoals;
   }
