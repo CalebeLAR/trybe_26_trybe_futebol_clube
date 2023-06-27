@@ -4,14 +4,14 @@ import MatchModel from '../models/MatchModel';
 import TeamModel from '../models/TeamModel';
 import { ILeadBoard } from '../Interfaces/leadBoard/ILeadBoard';
 
-class LeaderboardService {
+class LeaderboardAwayService {
   private matchModel = new MatchModel();
   private teamModel = new TeamModel();
   private leaderboardModel = 'model';
 
   static calculateTotalPoints(listMatches: IMatchTeam[], teamName:string) {
-    const playedMatches = listMatches.filter((match) => match.homeTeam.teamName === teamName);
-    const vitories = playedMatches.filter((match) => match.homeTeamGoals > match.awayTeamGoals);
+    const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
+    const vitories = playedMatches.filter((match) => match.homeTeamGoals < match.awayTeamGoals);
     const draws = playedMatches.filter((match) => match.homeTeamGoals === match.awayTeamGoals);
     const totalVitoriesPoints = vitories.length * 3;
     const totalDrawsPoints = draws.length;
@@ -20,34 +20,34 @@ class LeaderboardService {
   }
 
   static calculateTotalGamePlayed(listMatches: IMatchTeam[], teamName:string) {
-    const playedMatches = listMatches.filter((match) => match.homeTeam.teamName === teamName);
+    const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
 
     return playedMatches.length;
   }
 
   static calculateTotalVictories(listMatches: IMatchTeam[], teamName:string) {
-    const playedMatches = listMatches.filter((match) => match.homeTeam.teamName === teamName);
-    const vitories = playedMatches.filter((match) => match.homeTeamGoals > match.awayTeamGoals);
+    const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
+    const vitories = playedMatches.filter((match) => match.homeTeamGoals < match.awayTeamGoals);
 
     return vitories.length;
   }
 
   static calculateTotalDrawls(listMatches: IMatchTeam[], teamName:string) {
-    const playedMatches = listMatches.filter((match) => match.homeTeam.teamName === teamName);
+    const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
     const draws = playedMatches.filter((match) => match.homeTeamGoals === match.awayTeamGoals);
 
     return draws.length;
   }
 
   static calculateTotalLosses(listMatches: IMatchTeam[], teamName:string) {
-    const playedMatches = listMatches.filter((match) => match.homeTeam.teamName === teamName);
-    const losses = playedMatches.filter((match) => match.homeTeamGoals < match.awayTeamGoals);
+    const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
+    const losses = playedMatches.filter((match) => match.homeTeamGoals > match.awayTeamGoals);
 
     return losses.length;
   }
 
   static calculateTotalGoalsFavor(listMatches: IMatchTeam[], teamName:string) {
-    const playedMatches = listMatches.filter((match) => match.homeTeam.teamName === teamName);
+    const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
     const homeTeamsGoalsArray = playedMatches.map((match) => match.homeTeamGoals);
     const totalGoals = homeTeamsGoalsArray.reduce((sum, goals) => sum + goals);
 
@@ -55,7 +55,7 @@ class LeaderboardService {
   }
 
   static calculateTotalGoalsOwn(listMatches: IMatchTeam[], teamName:string) {
-    const playedMatches = listMatches.filter((match) => match.homeTeam.teamName === teamName);
+    const playedMatches = listMatches.filter((match) => match.awayTeam.teamName === teamName);
     const homeTeamsGoalsArray = playedMatches.map((match) => match.awayTeamGoals);
     const totalGoals = homeTeamsGoalsArray.reduce((sum, goals) => sum + goals);
 
@@ -63,8 +63,8 @@ class LeaderboardService {
   }
 
   static calculateEfficiency(listMatches: IMatchTeam[], teamName:string) {
-    const totalPoints = LeaderboardService.calculateTotalPoints(listMatches, teamName);
-    const totalGames = LeaderboardService.calculateTotalGamePlayed(listMatches, teamName);
+    const totalPoints = LeaderboardAwayService.calculateTotalPoints(listMatches, teamName);
+    const totalGames = LeaderboardAwayService.calculateTotalGamePlayed(listMatches, teamName);
     if (totalGames <= 0) return '1.00';
 
     const efficiency = (totalPoints / (totalGames * 3)) * 100;
@@ -73,8 +73,8 @@ class LeaderboardService {
   }
 
   static calculateGoalsBalance(listMatches: IMatchTeam[], teamName:string) {
-    const goalsFavor = LeaderboardService.calculateTotalGoalsFavor(listMatches, teamName);
-    const goalsOwn = LeaderboardService.calculateTotalGoalsOwn(listMatches, teamName);
+    const goalsFavor = LeaderboardAwayService.calculateTotalGoalsFavor(listMatches, teamName);
+    const goalsOwn = LeaderboardAwayService.calculateTotalGoalsOwn(listMatches, teamName);
     const goalsBalance = goalsFavor - goalsOwn;
 
     return goalsBalance;
@@ -99,12 +99,12 @@ class LeaderboardService {
   }
 
   static compareRules(prevLB:ILeadBoard, nextLB:ILeadBoard) {
-    const totalPoints = LeaderboardService.compareByTotalPoints(prevLB, nextLB);
+    const totalPoints = LeaderboardAwayService.compareByTotalPoints(prevLB, nextLB);
     if (totalPoints === 0) {
-      const goasBalance = LeaderboardService.compareByTotalGoalsBalance(prevLB, nextLB);
+      const goasBalance = LeaderboardAwayService.compareByTotalGoalsBalance(prevLB, nextLB);
 
       if (goasBalance === 0) {
-        const goalsFavor = LeaderboardService.compareByTotalGoalsFavor(prevLB, nextLB);
+        const goalsFavor = LeaderboardAwayService.compareByTotalGoalsFavor(prevLB, nextLB);
 
         return goalsFavor;
       }
@@ -119,22 +119,22 @@ class LeaderboardService {
 
     const leadBoard = listTeams.map(({ teamName }) => ({
       name: teamName,
-      totalPoints: LeaderboardService.calculateTotalPoints(listMatches, teamName),
-      totalGames: LeaderboardService.calculateTotalGamePlayed(listMatches, teamName),
-      totalVictories: LeaderboardService.calculateTotalVictories(listMatches, teamName),
-      totalDraws: LeaderboardService.calculateTotalDrawls(listMatches, teamName),
-      totalLosses: LeaderboardService.calculateTotalLosses(listMatches, teamName),
-      goalsFavor: LeaderboardService.calculateTotalGoalsFavor(listMatches, teamName),
-      goalsOwn: LeaderboardService.calculateTotalGoalsOwn(listMatches, teamName),
-      goalsBalance: LeaderboardService.calculateGoalsBalance(listMatches, teamName),
-      efficiency: LeaderboardService.calculateEfficiency(listMatches, teamName),
+      totalPoints: LeaderboardAwayService.calculateTotalPoints(listMatches, teamName),
+      totalGames: LeaderboardAwayService.calculateTotalGamePlayed(listMatches, teamName),
+      totalVictories: LeaderboardAwayService.calculateTotalVictories(listMatches, teamName),
+      totalDraws: LeaderboardAwayService.calculateTotalDrawls(listMatches, teamName),
+      totalLosses: LeaderboardAwayService.calculateTotalLosses(listMatches, teamName),
+      goalsFavor: LeaderboardAwayService.calculateTotalGoalsFavor(listMatches, teamName),
+      goalsOwn: LeaderboardAwayService.calculateTotalGoalsOwn(listMatches, teamName),
+      goalsBalance: LeaderboardAwayService.calculateGoalsBalance(listMatches, teamName),
+      efficiency: LeaderboardAwayService.calculateEfficiency(listMatches, teamName),
     }));
 
     const sortLeadBoard: ILeadBoard[] = leadBoard.sort(
-      (prevLB, nextLB) => LeaderboardService.compareRules(prevLB, nextLB),
+      (prevLB, nextLB) => LeaderboardAwayService.compareRules(prevLB, nextLB),
     );
     return { status: 'SUCCESSFUL', data: sortLeadBoard };
   }
 }
 
-export default LeaderboardService;
+export default LeaderboardAwayService;

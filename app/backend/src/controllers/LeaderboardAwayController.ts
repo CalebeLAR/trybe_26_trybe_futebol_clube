@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import mapStatusHTTP from '../utils/mapStatusHTTP';
-import LeaderboardService from '../services/LeaderboardService';
+import LeaderboardAwayService from '../services/LeaderboardAwayService';
 
-class LeaderboardController {
-  private leadboardService = new LeaderboardService();
+class LeaderboardAwayController {
+  private leadboardService = new LeaderboardAwayService();
 
   async getHomeTeamPerformanceInformation(req:Request, res:Response):Promise<Response> {
     const { status, data } = await this.leadboardService.getHomeTeamPerformanceInformation();
@@ -13,4 +13,4 @@ class LeaderboardController {
   }
 }
 
-export default LeaderboardController;
+export default LeaderboardAwayController;
