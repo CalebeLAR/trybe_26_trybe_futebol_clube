@@ -1,5 +1,3 @@
-import { ITeam } from '../teams/ITeam';
-
 export interface IMatch {
   id: number,
   homeTeamId: number,
@@ -15,8 +13,8 @@ export type IMatchGoals = {
 };
 
 export type IMatchTeam = IMatch & {
-  homeTeam: ITeam['teamName'],
-  awayTeam: ITeam['teamName'],
+  homeTeam: { teamName: string },
+  awayTeam: { teamName: string },
 };
 
 export interface INewMatch {

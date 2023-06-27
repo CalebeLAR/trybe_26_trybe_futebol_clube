@@ -2,11 +2,10 @@ import sequelize from '../database/models';
 import SequelizeTeam from '../database/models/SequelizeTeam';
 import SequelizeMatch from '../database/models/SequelizeMatch';
 import { IMatch, IMatchGoals, IMatchTeam, INewMatch } from '../Interfaces/matches/IMatch';
-import { ITeam } from '../Interfaces/teams/ITeam';
 
 type SequelizeMatchTeam = SequelizeMatch & {
-  homeTeam: { dataValues: ITeam['teamName'] };
-  awayTeam: { dataValues: ITeam['teamName'] };
+  homeTeam: { dataValues: { teamName: string } };
+  awayTeam: { dataValues: { teamName: string } };
 };
 
 const getMatchesWithTeams = (sequelizeMatchTeam:SequelizeMatchTeam) => ({
