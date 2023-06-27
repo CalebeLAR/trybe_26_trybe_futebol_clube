@@ -5,8 +5,8 @@ import { IMatch, IMatchGoals, IMatchTeam, INewMatch } from '../Interfaces/matche
 import { ITeam } from '../Interfaces/teams/ITeam';
 
 type SequelizeMatchTeam = SequelizeMatch & {
-  homeTeam: ITeam['teamName'];
-  awayTeam: ITeam['teamName'];
+  homeTeam: { dataValues: ITeam['teamName'] };
+  awayTeam: { dataValues: ITeam['teamName'] };
 };
 
 const getMatchesWithTeams = (sequelizeMatchTeam:SequelizeMatchTeam) => ({
@@ -16,8 +16,8 @@ const getMatchesWithTeams = (sequelizeMatchTeam:SequelizeMatchTeam) => ({
   awayTeamId: sequelizeMatchTeam.awayTeamId,
   awayTeamGoals: sequelizeMatchTeam.awayTeamGoals,
   inProgress: sequelizeMatchTeam.inProgress,
-  homeTeam: sequelizeMatchTeam.homeTeam,
-  awayTeam: sequelizeMatchTeam.awayTeam,
+  homeTeam: sequelizeMatchTeam.homeTeam.dataValues,
+  awayTeam: sequelizeMatchTeam.awayTeam.dataValues,
 });
 
 const getMatch = (sequelizeNewMatch: SequelizeMatch) => {
@@ -50,7 +50,7 @@ class MatchModel {
       }],
     }) as unknown as SequelizeMatchTeam[];
 
-    const matches = sequelizeMatches.map((mt) => getMatchesWithTeams(mt));
+    const matches: IMatchTeam[] = sequelizeMatches.map((mt) => getMatchesWithTeams(mt));
 
     return matches;
   }
