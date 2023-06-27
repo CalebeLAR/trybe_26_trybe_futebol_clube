@@ -2,6 +2,7 @@ import { IMatchTeam } from '../Interfaces/matches/IMatch';
 import { ServiceResponse } from '../Interfaces/IServiceResponse';
 import MatchModel from '../models/MatchModel';
 import TeamModel from '../models/TeamModel';
+import { ILeadBoard } from '../Interfaces/leadBoard/ILeadBoard';
 
 class LeaderboardService {
   private matchModel = new MatchModel();
@@ -61,11 +62,62 @@ class LeaderboardService {
     return totalGoals;
   }
 
+  static calculateEfficiency(listMatches: IMatchTeam[], teamName:string) {
+    const totalPoints = LeaderboardService.calculateTotalPoints(listMatches, teamName);
+    const totalGames = LeaderboardService.calculateTotalGamePlayed(listMatches, teamName);
+    if (totalGames <= 0) return '1.00';
+
+    const efficiency = (totalPoints / (totalGames * 3)) * 100;
+    const fixEfficiency = efficiency.toFixed(2);
+    return fixEfficiency;
+  }
+
+  static calculateGoalsBalance(listMatches: IMatchTeam[], teamName:string) {
+    const goalsFavor = LeaderboardService.calculateTotalGoalsFavor(listMatches, teamName);
+    const goalsOwn = LeaderboardService.calculateTotalGoalsOwn(listMatches, teamName);
+    const goalsBalance = goalsFavor - goalsOwn;
+
+    return goalsBalance;
+  }
+
+  static compareByTotalPoints(prevLB:ILeadBoard, nextLB:ILeadBoard) {
+    if (prevLB.totalPoints < nextLB.totalPoints) return 1;
+    if (prevLB.totalPoints > nextLB.totalPoints) return -1;
+    return 0;
+  }
+
+  static compareByTotalGoalsBalance(prevLB:ILeadBoard, nextLB:ILeadBoard) {
+    if (prevLB.goalsBalance < nextLB.goalsBalance) return 1;
+    if (prevLB.goalsBalance > nextLB.goalsBalance) return -1;
+    return 0;
+  }
+
+  static compareByTotalGoalsFavor(prevLB:ILeadBoard, nextLB:ILeadBoard) {
+    if (prevLB.goalsFavor < nextLB.goalsFavor) return 1;
+    if (prevLB.goalsFavor > nextLB.goalsFavor) return -1;
+    return 0;
+  }
+
+  static compareRules(prevLB:ILeadBoard, nextLB:ILeadBoard) {
+    const totalPoints = LeaderboardService.compareByTotalPoints(prevLB, nextLB);
+    if (totalPoints === 0) {
+      const goasBalance = LeaderboardService.compareByTotalGoalsBalance(prevLB, nextLB);
+
+      if (goasBalance === 0) {
+        const goalsFavor = LeaderboardService.compareByTotalGoalsFavor(prevLB, nextLB);
+
+        return goalsFavor;
+      }
+      return goasBalance;
+    }
+    return totalPoints;
+  }
+
   async getHomeTeamPerformanceInformation():Promise<ServiceResponse<object[]>> {
     const listMatches = await this.matchModel.fetchInProgressMatches(false);
     const listTeams = await this.teamModel.findAll();
 
-    const loadBord = listTeams.map(({ teamName }) => ({
+    const leadBoard = listTeams.map(({ teamName }) => ({
       name: teamName,
       totalPoints: LeaderboardService.calculateTotalPoints(listMatches, teamName),
       totalGames: LeaderboardService.calculateTotalGamePlayed(listMatches, teamName),
@@ -74,8 +126,14 @@ class LeaderboardService {
       totalLosses: LeaderboardService.calculateTotalLosses(listMatches, teamName),
       goalsFavor: LeaderboardService.calculateTotalGoalsFavor(listMatches, teamName),
       goalsOwn: LeaderboardService.calculateTotalGoalsOwn(listMatches, teamName),
+      goalsBalance: LeaderboardService.calculateGoalsBalance(listMatches, teamName),
+      efficiency: LeaderboardService.calculateEfficiency(listMatches, teamName),
     }));
-    return { status: 'SUCCESSFUL', data: loadBord };
+
+    const sortLeadBoard: ILeadBoard[] = leadBoard.sort(
+      (prevLB, nextLB) => LeaderboardService.compareRules(prevLB, nextLB),
+    );
+    return { status: 'SUCCESSFUL', data: sortLeadBoard };
   }
 }
 
