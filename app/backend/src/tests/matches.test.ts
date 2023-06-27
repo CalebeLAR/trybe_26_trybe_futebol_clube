@@ -19,11 +19,11 @@ describe('#MATCHES', async function () {
   describe('testa endpoint GET /matches', async function () {
     it('deve retornar um status 200 e uma lista de partidas', async function () {
       // arrange
-      const { matchesWithTeams } = matchesMocks.matchesLists;
+      const { sequelizeMatchesWithTeams, matchesWithTeams } = matchesMocks.matchesLists;
 
-      sinon.stub(SequelizeMatch, 'findAll').resolves(matchesWithTeams as any);
+      sinon.stub(SequelizeMatch, 'findAll').resolves(sequelizeMatchesWithTeams as any);
       // act 
-      const httpResponse = await chai.request(app).get('/matches').send(matchesWithTeams);
+      const httpResponse = await chai.request(app).get('/matches');
 
       // assert
       expect(httpResponse.status).to.be.equal(200);
@@ -31,9 +31,10 @@ describe('#MATCHES', async function () {
     });
     it('deve retornar um status 200 e uma lista de partidas em andamento, caso receba a query inProgress=true', async function () {
       // arrange
-      const { InProgressMatches } = matchesMocks.matchesLists;
+      const { sequelizeMatchesWithTeams, InProgressMatches } = matchesMocks.matchesLists;
+      const SqlzInProgressMatches = sequelizeMatchesWithTeams.filter((smt)=> smt.inProgress);
 
-      sinon.stub(SequelizeMatch, 'findAll').resolves(InProgressMatches as any);
+      sinon.stub(SequelizeMatch, 'findAll').resolves(SqlzInProgressMatches as any);
       // act 
       const httpResponse = await chai.request(app).get('/matches').query({ inProgress: 'true' });
 
@@ -43,9 +44,10 @@ describe('#MATCHES', async function () {
     });
     it('deve retornar um status 200 e uma lista de partidas finalizadas, caso receba a query inProgress=false', async function () {
       // arrange
-      const { ComplatedMatches } = matchesMocks.matchesLists;
+      const { sequelizeMatchesWithTeams, ComplatedMatches } = matchesMocks.matchesLists;
+      const SqlzFinishedMatches = sequelizeMatchesWithTeams.filter((smt)=> !smt.inProgress);
 
-      sinon.stub(SequelizeMatch, 'findAll').resolves(ComplatedMatches as any);
+      sinon.stub(SequelizeMatch, 'findAll').resolves(SqlzFinishedMatches as any);
       // act 
       const httpResponse = await chai.request(app).get('/matches').query({ inProgress: 'false' });
 
